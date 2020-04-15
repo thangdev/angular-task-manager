@@ -101,13 +101,13 @@
         }
     }
 
-    &.completed .task-text {
+    &.completed p {
         text-decoration: line-through;
         opacity: 0.8;
     }
 
 
-    .task-text {
+    .p {
         display: flex;
         flex-grow: 1;
     }

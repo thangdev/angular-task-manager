@@ -43,12 +43,12 @@ app.put("/lists/:listId/tasks/:taskId", async (req, res) => {
   try {
     const list = await List.findById(req.params.listId);
     if (!list) return res.status(404).send("List not found!");
-    const task = await Task.findById(req.params.taskId);
+    let task = await Task.findById(req.params.taskId);
     if (!task) return res.status(404).send("Task not found!");
 
-    task.title = req.body.title;
+    task.title = req.body.title
+    if(req.body.completed) task.completed = req.body.completed
     const response = await task.save();
-
     res.send(response);
   } catch (error) {
     res.send({ error: 1, message: error });

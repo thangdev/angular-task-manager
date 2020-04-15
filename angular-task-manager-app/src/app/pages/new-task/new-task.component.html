@@ -1,0 +1,16 @@
+<div class="centered-content">
+  <div class="modal-box ">
+
+    <h5 class="title">Create a new task</h5>
+    <input #taskName class="input is-medium" type="text" style="background-color: rgb(228, 228, 228);" placeholder="Enter a task name here..." />
+    <br><br>
+    <div class="buttons is-right">
+      <button class="button is-medium" routerLink='/'>Cancel</button>
+      <button class="button is-medium is-primary  has-text-white" (click)="createTask(taskName.value)">Create</button>
+    </div>
+
+
+  </div>
+</div>
+
+

@@ -18,8 +18,8 @@ export class WebRequestService {
     return this.http.post(`${this.ApiUrl}/${endpoint}`, payload);
   }
 
-  put(endpoint: string, payload: object) {
-    return this.http.post(`${this.ApiUrl}/${endpoint}`, payload);
+  put(endpoint: string, payload: Object) {
+    return this.http.put(`${this.ApiUrl}/${endpoint}`, payload);
   }
 
   delete(endpoint: string) {
