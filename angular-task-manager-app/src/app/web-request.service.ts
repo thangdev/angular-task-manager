@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +24,13 @@ export class WebRequestService {
 
   delete(endpoint: string) {
     return this.http.delete(`${this.ApiUrl}/${endpoint}`);
+  }
+
+  login(email: string, password: string) {
+    return this.http.post(`${this.ApiUrl}/login`, {
+      email,
+      password
+    }, { observe: 'response' })
   }
 
 }

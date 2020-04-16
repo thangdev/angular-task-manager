@@ -3,19 +3,34 @@ const cors = require("cors");
 
 const app = express();
 app.use(cors());
-
+app.use((req, res, next) => {
+  res.header (
+    'Access-Control-Expose-Headers',
+    'x-access-token, x-refresh-token'
+  )
+  next()
+})
 const { mongoose } = require("./db/mongoose");
+
 const router = express.Router();
 app.use(express.json());
 
-const { List, Task } = require("./db/models");
-const lists = require("./routes/lists");
+
+// Models
+const { List, Task, User } = require("./db/models");
+
+// Routers
+const listsRoutes = require("./routes/lists");
+const userRoutes = require("./routes/user")
 
 
-// LIST ROUTE
-app.use("/lists", lists);
+// LIST ROUTES
+app.use("/lists", listsRoutes);
 
-// TASK ROUTE
+// USER ROUTES
+app.use("/", userRoutes)
+
+// TASK ROUTES
 app.get("/lists/:listId/tasks", async (req, res) => {
   try {
     const response = await Task.find({ _listId: req.params.listId });

@@ -4,27 +4,49 @@
       <h1 class="title has-text-primary">
         LIST
       </h1>
-      <div class="list-menu" style=" height: 500px; overflow: auto">
-        <a *ngFor="let list of lists" href="" class="list-menu-item" [routerLink] = "['/lists', list._id]" routerLinkActive="is-active">
-          <p>{{list.title}}</p>
+      <div class="list-menu" style="height: 500px; overflow: auto;">
+        <a
+          *ngFor="let list of lists"
+          href=""
+          class="list-menu-item"
+          [routerLink]="['/lists', list._id]"
+          routerLinkActive="is-active"
+        >
+          <p>{{ list.title }}</p>
         </a>
       </div>
 
-      <button class="button is-primary has-text-white" routerLink="/new-list">+ New List</button>
+      <button class="button is-primary has-text-white" routerLink="/new-list">
+        + New List
+      </button>
     </div>
     <div class="task-list-container">
-      <h1 class="title has-text-primary">TASKS</h1>
-      <!-- Task element -->
-      <div class="task" *ngFor="let task of tasks" (click)="onTaskClicked(task)" [ngClass]="{'completed': task.completed}">
-        <p>
-          {{task.title}}
-        </p>
+      <div *ngIf = "tasks">
+        <h1 class="title has-text-primary">TASKS</h1>
+        <!-- Task element -->
+        <div
+          class="task"
+          *ngFor="let task of tasks"
+          (click)="onTaskClicked(task)"
+          [ngClass]="{ completed: task.completed }"
+        >
+          <p>
+            {{ task.title }}
+          </p>
+        </div>
+        <h3 *ngIf="tasks.length === 0">There are no task here</h3>
+
+        <button
+          class="circle-add-button button is-primary"
+          routerLink="./new-task"
+        >
+          <img src="../../../assets/add-black-18dp.svg" alt="" />
+        </button>
       </div>
+      <div style="text-align: center;" *ngIf="!tasks">
+        <h3>Please select a list from the sidebar!</h3>
 
-      <button class="circle-add-button button is-primary" routerLink="./new-task">
-        <img src="../../../assets/add-black-18dp.svg" alt="">
-      </button>
-
+      </div>
     </div>
   </div>
 </div>
