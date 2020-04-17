@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { User } = require("../db/models");
-const auth = require("./auth");
+const verifySession = require("./verify-session");
 
 // User Register
 router.post("/register", async (req, res) => {
@@ -37,12 +37,12 @@ router.post("/login", async (req, res) => {
 });
 
 // Generate access token
-router.get("/me/access-token", auth, async (req, res) => {
+router.get("/me/access-token", verifySession, async (req, res) => {
   try {
     const accessToken = await req.userObject.generateAccessAuthToken();
     res.header("x-access-token", accessToken).send({ accessToken });
   } catch (error) {
-      res.status(400).send(error)
+    res.status(400).send(error);
   }
 });
 

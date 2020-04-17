@@ -1,37 +1,36 @@
 const express = require("express");
 const cors = require("cors");
-
 const app = express();
+const auth = require("./routes/auth");
 app.use(cors());
 app.use((req, res, next) => {
-  res.header (
-    'Access-Control-Expose-Headers',
-    'x-access-token, x-refresh-token'
-  )
-  next()
-})
+  res.header(
+    "Access-Control-Expose-Headers",
+    "x-access-token, x-refresh-token"
+  );
+  next();
+});
+
 const { mongoose } = require("./db/mongoose");
 
 const router = express.Router();
 app.use(express.json());
-
 
 // Models
 const { List, Task, User } = require("./db/models");
 
 // Routers
 const listsRoutes = require("./routes/lists");
-const userRoutes = require("./routes/user")
-
+const userRoutes = require("./routes/user");
 
 // LIST ROUTES
 app.use("/lists", listsRoutes);
 
 // USER ROUTES
-app.use("/", userRoutes)
+app.use("/", userRoutes);
 
 // TASK ROUTES
-app.get("/lists/:listId/tasks", async (req, res) => {
+app.get("/lists/:listId/tasks", auth, async (req, res) => {
   try {
     const response = await Task.find({ _listId: req.params.listId });
     res.send(response);
@@ -40,9 +39,13 @@ app.get("/lists/:listId/tasks", async (req, res) => {
   }
 });
 
-
-app.post("/lists/:listId/tasks", async (req, res) => {
+app.post("/lists/:listId/tasks", auth, async (req, res) => {
   try {
+    const list = await List.findOne({
+      _id: req.params.listId,
+      _userId: req.user_id,
+    });
+    if (!list) return res.status(404).send("list not found");
     const newTask = new Task({
       title: req.body.title,
       _listId: req.params.listId,
@@ -54,15 +57,19 @@ app.post("/lists/:listId/tasks", async (req, res) => {
   }
 });
 
-app.put("/lists/:listId/tasks/:taskId", async (req, res) => {
+app.put("/lists/:listId/tasks/:taskId", auth, async (req, res) => {
   try {
-    const list = await List.findById(req.params.listId);
-    if (!list) return res.status(404).send("List not found!");
+    const list = await List.findOne({
+      _id: req.params.listId,
+      _userId: req.user_id,
+    });
+    if (!list) return res.status(404).send("list not found");
+
     let task = await Task.findById(req.params.taskId);
     if (!task) return res.status(404).send("Task not found!");
 
-    task.title = req.body.title
-    if(req.body.completed) task.completed = req.body.completed
+    task.title = req.body.title;
+    if (req.body.completed) task.completed = req.body.completed;
     const response = await task.save();
     res.send(response);
   } catch (error) {
@@ -70,10 +77,17 @@ app.put("/lists/:listId/tasks/:taskId", async (req, res) => {
   }
 });
 
-app.delete("/lists/:listId/tasks/:id", async (req, res) => {
+app.delete("/lists/:listId/tasks/:id", auth, async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id);
+    const list = await List.findOne({
+      _id: req.params.listId,
+      _userId: req.user_id,
+    });
+    if (!list) return res.status(404).send("list not found");
+
+    let task = await Task.findById(req.params.id);
     if (!task) return res.status(404).send("Task not found!");
+
     const taskDeleted = await Task.findOneAndDelete({ _id: req.params.id });
     res.send(taskDeleted);
   } catch (error) {

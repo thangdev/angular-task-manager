@@ -31,7 +31,7 @@
           [ngClass]="{ completed: task.completed }"
         >
           <p>
-            {{ task.title }}
+            {{ task.title || "No title" }}
           </p>
         </div>
         <h3 *ngIf="tasks.length === 0">There are no task here</h3>

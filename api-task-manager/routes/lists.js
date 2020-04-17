@@ -1,19 +1,23 @@
 const express = require("express");
 const router = express.Router();
-const { List } = require("../db/models");
+const auth = require('./auth')
 
-router.get("/", async (req, res) => {
+const { List, Task } = require("../db/models");
+
+router.get("/", auth, async (req, res) => {
   try {
-    const response = await List.find({});
+    const response = await List.find({ _userId: req.user_id });
     res.send(response);
   } catch (error) {
     res.send({ error: 1, message: error });
   }
 });
 
-router.post("/", async (req, res) => {
+
+
+router.post("/", auth, async (req, res) => {
   try {
-    const newList = new List({ title: req.body.title });
+    const newList = new List({ title: req.body.title, _userId: req.user_id });
     const response = await newList.save();
     res.send(response);
   } catch (error) {
@@ -21,28 +25,25 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth,  async (req, res) => {
   try {
-    const list = await List.findById(req.params.id);
-    if (!list) return res.status(404).send("list not found!");
-    list.title = req.body.title;
-    const response = await list.save();
-    res.send(response);
+    const query = {_id: req.params.id, _userId: req.user_id}
+    const list = await List.findOneAndUpdate(query, {$set: req.body });
+    res.send(list);
   } catch (error) {
     res.send({ error: 1, message: error });
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
-    const list = await List.findById(req.params.id);
-    if (!list) return res.status(404).send("list not found!");
-    const listDeleted = await List.findOneAndDelete({ _id: req.params.id });
-    res.send(listDeleted);
+    const query = { _id: req.params.id, _userId: req.user_id };
+    const deletedList = await List.findOneAndRemove(query);
+    const response = await Task.deleteMany({ _listId: list._id });
+    res.send(deletedList);
   } catch (error) {
     res.send({ error: 1, message: error });
   }
 });
 
-
-module.exports = router
+module.exports = router;
